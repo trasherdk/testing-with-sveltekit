@@ -19,8 +19,7 @@ export default {
     return success(result)
   },
 
-  async validate (data) {
-    // if (!prisma) { prisma = await db.prisma }
+  validate (data) {
     const errors = {}
 
     if (!data.name) {

@@ -20,8 +20,18 @@ export const connectMysql = async () => {
 
 export const connectPrisma = async () => {
   let connection
+  const config = {
+    errorFormat: 'minimal',
+    log: [
+      {
+        emit: 'stdout',
+        level: 'query',
+      }
+    ]
+  }
+
   try {
-    connection = new PrismaClient()
+    connection = new PrismaClient(config)
     /*
       .then(conn => conn)
       .catch(error => {
@@ -53,13 +63,13 @@ export const truncate = async (table) => {
 
     await mysql.query(`SET FOREIGN_KEY_CHECKS = 1;`)
 
-    await mysql.commit(() => mysql.release())
+    await mysql.commit()
+    await mysql.release()
 
   } catch (error) {
     console.log('Truncate transaction %s failed', table, error)
-    await mysql.query('ROLLBACK', () => {
-      mysql.release()
-    })
+    await mysql.query('ROLLBACK')
+    await mysql.release()
   }
 }
 
