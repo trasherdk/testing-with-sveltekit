@@ -1,21 +1,26 @@
 import { db } from './db'
 import { success, error } from './result'
-
+let prisma
 export default {
-  async all() {
-    return await db.player.findMany()
+
+  async all () {
+    if (!prisma) { prisma = await db.prisma }
+    const result = await prisma.player.findMany({})
+    return result
   },
 
-  async create(data) {
+  async create (data) {
+    if (!prisma) { prisma = await db.prisma }
     const errors = this.validate(data)
     if (Object.keys(errors).length) return error(errors)
 
-    const result = await db.player.create({ data })
+    const result = await prisma.player.create({ data })
 
     return success(result)
   },
 
-  validate(data) {
+  async validate (data) {
+    // if (!prisma) { prisma = await db.prisma }
     const errors = {}
 
     if (!data.name) {

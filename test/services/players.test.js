@@ -1,23 +1,53 @@
-import { db } from '$lib/services/db'
+import { db, truncate } from '$lib/services/db'
 import players from '$lib/services/players'
+import { expect } from 'vitest'
+import { test } from 'vitest'
+import { describe } from 'vitest'
+
 
 describe('Players', () => {
-  beforeAll(async () => {
-    await db.$executeRaw`truncate table "Player"`
+  console.log('*****[ BEGIN TEST ]*****')
+
+  beforeAll(async (msg = 'Global beforeAll()') => {
+    // await db.$executeRaw`truncate table 'Player'`
+    //await db.$queryRaw`truncate table Player`
+    // await db.player.deleteMany({ where: {} })
+    // console.log(msg)
+    await truncate('player')
   })
 
-  test('all', async () => {
-    await db.player.create({
-      data: {
+  describe('Create and Select', () => {
+    test('Select on Empty', async () => {
+      const mysql = await db.mysql
+      const [rows] = await mysql.query('select * from player;')
+      // console.log('mysql[rows]', rows)
+      //expect(fields).toHaveLength(3)
+      expect(rows).toHaveLength(0)
+    })
+
+    // console.log('Prisma:', db.prisma)
+    test('Create One', async () => {
+      let result = await players.create({
         name: 'Wayne Gretzky',
         position: 'Center'
-      }
+      })
+      expect(result.success).toBeTruthy()
+      // console.log('Create #1', result)
     })
-    const result = await players.all()
 
-    expect(result).toHaveLength(1)
-    expect(result[0].name).toBe('Wayne Gretzky')
-    expect(result[0].position).toBe('Center')
+    test('Select all', async () => {
+
+      let result = await players.create({
+        name: 'Wayne Gretzky',
+        position: 'Center'
+      })
+
+      result = await players.all()
+
+      expect(result).toHaveLength(1)
+      expect(result[0].name).toBe('Wayne Gretzky')
+      expect(result[0].position).toBe('Center')
+    })
   })
 
   describe('create', async () => {
@@ -37,6 +67,8 @@ describe('Players', () => {
         position: 'Center'
       })
 
+      // console.log('without name', result)
+
       expect(result.success).toBeFalsy()
       expect(result.errors.name).toContain({ required: true })
     })
@@ -45,6 +77,8 @@ describe('Players', () => {
       const result = await players.create({
         name: 'Gretzky'
       })
+
+      // console.log('without position', result)
 
       expect(result.success).toBeFalsy()
       expect(result.errors.position).toContain({ required: true })
