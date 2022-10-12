@@ -1,20 +1,19 @@
 import { db, truncate } from '$lib/services/db'
 import players from '$lib/services/players'
-import { beforeEach } from 'vitest'
+//import { beforeAll } from 'vitest'
 import { expect } from 'vitest'
 import { test } from 'vitest'
 import { describe } from 'vitest'
 
-
 describe('Players', () => {
   console.log('*****[ BEGIN TEST ]*****')
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // const prisma = await db.prisma
     // await prisma.$executeRaw`truncate table 'Player'`
     // await prisma.$queryRaw`truncate table Player`
     // await prisma.player.deleteMany({ where: {} })
-    // await truncate('player')
+    await truncate('player')
   })
 
   describe('Create and Select', () => {
@@ -39,7 +38,6 @@ describe('Players', () => {
     })
 
     test('Select all', async () => {
-
       let result = await players.create({
         name: 'Wayne Gretzky',
         position: 'Center'

@@ -7,7 +7,13 @@ dotenv.config()
 const { DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME } = process.env
 
 export const connectMysql = async () => {
-  const pool = mysql.createPool({ host: DB_HOST, port: DB_PORT, user: DB_USER, password: DB_PASS, database: DB_NAME })
+  const pool = mysql.createPool({
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USER,
+    password: DB_PASS,
+    database: DB_NAME
+  })
   let connection
   try {
     connection = await pool.getConnection()
@@ -25,7 +31,7 @@ export const connectPrisma = async () => {
     log: [
       {
         emit: 'stdout',
-        level: 'query',
+        level: 'query'
       }
     ]
   }
@@ -65,7 +71,6 @@ export const truncate = async (table) => {
 
     await mysql.commit()
     await mysql.release()
-
   } catch (error) {
     console.log('Truncate transaction %s failed', table, error)
     await mysql.query('ROLLBACK')
